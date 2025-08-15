@@ -1,0 +1,105 @@
+% Build with XeLaTeX or LuaLaTeX
+\usepackage{fontspec}
+\usepackage{xeCJK}
+
+% English: Helvetica-like (bundled)
+\setmainfont{TeX Gyre Heros}[UprightFont=*,BoldFont=* Bold,ItalicFont=* Italic,BoldItalicFont=* Bold Italic]
+\setsansfont{TeX Gyre Heros}[UprightFont=*,BoldFont=* Bold,ItalicFont=* Italic,BoldItalicFont=* Bold Italic]
+\setmonofont{Latin Modern Mono}
+
+% Chinese (Overleaf bundled)
+\setCJKmainfont{Noto Serif CJK SC}
+\setCJKsansfont{Noto Sans CJK SC}
+
+% Layout & basics
+\usepackage[
+  ignoreheadfoot,
+  top=1 cm, bottom=1 cm,
+  left=1 cm, right=1.25 cm,
+  footskip=1.25 cm
+]{geometry}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\usepackage{changepage}
+\usepackage{tabularx,array}
+\usepackage{environ}
+\usepackage{calc}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath}
+\usepackage{needspace}
+\usepackage{paracol} % ← threecolentry 需要
+
+\definecolor{primaryColor}{RGB}{0,0,0}
+\hypersetup{colorlinks=true, urlcolor=primaryColor}
+
+\raggedright
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\columnsep}{0.15cm}
+\pagenumbering{gobble}
+
+% 断行更稳（可选，减少 Overfull hbox）
+\emergencystretch=2em
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip = 0pt plus 1pt
+
+% Section style
+\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
+\titlespacing{\section}{-1pt}{0.2 cm}{0.2 cm}
+
+% Bullets & list indent
+\renewcommand\labelitemi{$\vcenter{\hbox{\small$\bullet$}}$}
+\newenvironment{highlights}{
+  \begin{itemize}[
+    topsep=0.10 cm,
+    parsep=0.10 cm,
+    partopsep=0pt,
+    itemsep=0pt,
+    leftmargin=0.8cm,
+    align=parleft
+  ]
+}{\end{itemize}}
+
+% --- 正文块：占 80% 宽（右留白 20%）---
+\newenvironment{onecolentry}{%
+  \par\noindent
+  \begin{adjustwidth}{0pt}{0.20\linewidth}% 右侧留白 20%
+  \setlength{\parskip}{0.2em}%
+}{%
+  \end{adjustwidth}%
+  \par
+}
+
+% --- 项目标题行：整行分两块，左 78% 自动换行，右 20% 右对齐显示日期/地点 ---
+\NewEnviron{twocolentry}[1]{%
+  \par\noindent
+  \begin{minipage}[t]{0.78\linewidth}\setlength{\parskip}{0.2em}
+    \BODY
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.20\linewidth}\raggedleft
+    \small #1
+  \end{minipage}%
+  \par
+}
+
+
+% （可选）如果你想让右列随版宽自适应 20%，把上面 p{4.5cm} 换成：
+%   p{0.2\linewidth}
+% 并与 onecolentry 的 0.2\linewidth 保持一致观感。
+
+% three（如需三列）
+\newenvironment{threecolentry}[3][]{
+    \onecolentry
+    \def\thirdColumn{#3}
+    \setcolumnwidth{, \fill, 4.5 cm} % paracol 提供
+    \begin{paracol}{3}
+    {\raggedright #2} \switchcolumn
+}{
+    \switchcolumn \raggedleft \thirdColumn
+    \end{paracol}
+    \endonecolentry
+}

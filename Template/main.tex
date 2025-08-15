@@ -1,0 +1,35 @@
+\documentclass[10pt, letterpaper]{article}
+\input{preamble.tex}
+
+% ===== 在这里切换岗位版本 =====
+% 可选：job_1 / job_2
+\def\jobtype{job_1}
+% =================================
+
+\begin{document}
+
+% --- Header（占位） ---
+{\fontsize{22pt}{22pt}\selectfont Your Name\par}
+\vspace{5pt}
+{\normalsize
+you@example.com \hspace{5pt}|\hspace{5pt}
+(+00) 000-0000 \hspace{5pt}|\hspace{5pt}
+Status: Open to Work\par}
+\vspace{8pt}
+
+\section{教育背景 / Education}
+\input{education.tex}
+
+\section{工作经历 / Experience}
+\input{work_experience.tex}
+
+\section{项目经历 / Projects}
+\input{projects/\jobtype.tex}
+
+\section{技能 / Skills}
+\input{skills/\jobtype.tex}
+
+\end{document}
+
+
+
