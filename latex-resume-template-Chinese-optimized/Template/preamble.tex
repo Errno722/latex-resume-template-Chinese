@@ -1,0 +1,141 @@
+% Build with XeLaTeX.
+\usepackage{iftex}
+\ifXeTeX\else
+  \PackageError{resume-template}{This template requires XeLaTeX}{Compile with xelatex or latexmk -xelatex.}
+\fi
+
+\usepackage{fontspec}
+\usepackage{xeCJK}
+
+% Font fallbacks keep the template portable across Overleaf, macOS and Windows.
+\IfFontExistsTF{TeX Gyre Heros}{
+  \setmainfont{TeX Gyre Heros}[UprightFont=*,BoldFont=* Bold,ItalicFont=* Italic,BoldItalicFont=* Bold Italic]
+  \setsansfont{TeX Gyre Heros}[UprightFont=*,BoldFont=* Bold,ItalicFont=* Italic,BoldItalicFont=* Bold Italic]
+}{
+  \IfFontExistsTF{Helvetica}{
+    \setmainfont{Helvetica}
+    \setsansfont{Helvetica}
+  }{
+    \setmainfont{Latin Modern Sans}
+    \setsansfont{Latin Modern Sans}
+  }
+}
+\IfFontExistsTF{Latin Modern Mono}{
+  \setmonofont{Latin Modern Mono}
+}{
+  \IfFontExistsTF{Menlo}{
+    \setmonofont{Menlo}
+  }{
+    \setmonofont{Courier New}
+  }
+}
+
+\IfFontExistsTF{Noto Serif CJK SC}{
+  \setCJKmainfont{Noto Serif CJK SC}
+}{
+  \IfFontExistsTF{Source Han Serif SC}{
+    \setCJKmainfont{Source Han Serif SC}
+  }{
+    \IfFontExistsTF{Songti SC}{
+      \setCJKmainfont{Songti SC}
+    }{
+      \setCJKmainfont{SimSun}
+    }
+  }
+}
+
+\IfFontExistsTF{Noto Sans CJK SC}{
+  \setCJKsansfont{Noto Sans CJK SC}
+}{
+  \IfFontExistsTF{Source Han Sans SC}{
+    \setCJKsansfont{Source Han Sans SC}
+  }{
+    \IfFontExistsTF{PingFang SC}{
+      \setCJKsansfont{PingFang SC}
+    }{
+      \setCJKsansfont{SimHei}
+    }
+  }
+}
+
+% Layout and basics.
+\usepackage[
+  ignoreheadfoot,
+  top=1cm,
+  bottom=1cm,
+  left=1cm,
+  right=1.25cm,
+  footskip=1.25cm
+]{geometry}
+\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
+
+\definecolor{primaryColor}{RGB}{0,0,0}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=primaryColor,
+  pdfborder={0 0 0}
+}
+
+\raggedright
+\pagestyle{empty}
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\topskip}{0pt}
+\setlength{\columnsep}{0.15cm}
+\pagenumbering{gobble}
+
+% Reduce overfull boxes in mixed Chinese/English content.
+\emergencystretch=2em
+\XeTeXlinebreaklocale "zh"
+\XeTeXlinebreakskip=0pt plus 1pt
+
+% Section style without extra package dependencies.
+\renewcommand{\section}[1]{%
+  \par\vspace{0.20cm}%
+  {\large\bfseries #1\par}%
+  \vspace{1pt}\hrule\vspace{0.20cm}%
+}
+
+% Bullets and list spacing.
+\renewcommand\labelitemi{\textbullet}
+\newenvironment{highlights}{
+  \begin{itemize}
+    \setlength{\topsep}{0.10cm}
+    \setlength{\parsep}{0.10cm}
+    \setlength{\partopsep}{0pt}
+    \setlength{\itemsep}{0pt}
+}{\end{itemize}}
+
+% Body block: keep a consistent right-side date/location gutter.
+\newenvironment{onecolentry}{%
+  \par\noindent
+  \begin{list}{}{%
+    \setlength{\leftmargin}{0pt}%
+    \setlength{\rightmargin}{0.20\linewidth}%
+    \setlength{\listparindent}{0pt}%
+    \setlength{\itemindent}{0pt}%
+    \setlength{\parsep}{0.2em}%
+    \setlength{\topsep}{0pt}%
+  }%
+  \item\relax
+}{%
+  \end{list}%
+  \par
+}
+
+% Entry heading: left content wraps, right side keeps date/location aligned.
+\newcommand{\twocolentryright}{}
+\newenvironment{twocolentry}[1]{%
+  \def\twocolentryright{#1}%
+  \par\noindent
+  \begin{minipage}[t]{0.78\linewidth}\setlength{\parskip}{0.2em}
+}{%
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.20\linewidth}\raggedleft
+    \small \twocolentryright
+  \end{minipage}%
+  \par
+}
+
+\newcommand{\entrysep}{\vspace{0.20cm}}
