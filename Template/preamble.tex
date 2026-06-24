@@ -1,38 +1,81 @@
-% Build with XeLaTeX or LuaLaTeX
+% Build with XeLaTeX.
+\usepackage{iftex}
+\ifXeTeX\else
+  \PackageError{resume-template}{This template requires XeLaTeX}{Compile with xelatex or latexmk -xelatex.}
+\fi
+
 \usepackage{fontspec}
 \usepackage{xeCJK}
 
-% English: Helvetica-like (bundled)
-\setmainfont{TeX Gyre Heros}[UprightFont=*,BoldFont=* Bold,ItalicFont=* Italic,BoldItalicFont=* Bold Italic]
-\setsansfont{TeX Gyre Heros}[UprightFont=*,BoldFont=* Bold,ItalicFont=* Italic,BoldItalicFont=* Bold Italic]
-\setmonofont{Latin Modern Mono}
+% Font fallbacks keep the template portable across Overleaf, macOS and Windows.
+\IfFontExistsTF{TeX Gyre Heros}{
+  \setmainfont{TeX Gyre Heros}[UprightFont=*,BoldFont=* Bold,ItalicFont=* Italic,BoldItalicFont=* Bold Italic]
+  \setsansfont{TeX Gyre Heros}[UprightFont=*,BoldFont=* Bold,ItalicFont=* Italic,BoldItalicFont=* Bold Italic]
+}{
+  \IfFontExistsTF{Helvetica}{
+    \setmainfont{Helvetica}
+    \setsansfont{Helvetica}
+  }{
+    \setmainfont{Latin Modern Sans}
+    \setsansfont{Latin Modern Sans}
+  }
+}
+\IfFontExistsTF{Latin Modern Mono}{
+  \setmonofont{Latin Modern Mono}
+}{
+  \IfFontExistsTF{Menlo}{
+    \setmonofont{Menlo}
+  }{
+    \setmonofont{Courier New}
+  }
+}
 
-% Chinese (Overleaf bundled)
-\setCJKmainfont{Noto Serif CJK SC}
-\setCJKsansfont{Noto Sans CJK SC}
+\IfFontExistsTF{Noto Serif CJK SC}{
+  \setCJKmainfont{Noto Serif CJK SC}
+}{
+  \IfFontExistsTF{Source Han Serif SC}{
+    \setCJKmainfont{Source Han Serif SC}
+  }{
+    \IfFontExistsTF{Songti SC}{
+      \setCJKmainfont{Songti SC}
+    }{
+      \setCJKmainfont{SimSun}
+    }
+  }
+}
 
-% Layout & basics
+\IfFontExistsTF{Noto Sans CJK SC}{
+  \setCJKsansfont{Noto Sans CJK SC}
+}{
+  \IfFontExistsTF{Source Han Sans SC}{
+    \setCJKsansfont{Source Han Sans SC}
+  }{
+    \IfFontExistsTF{PingFang SC}{
+      \setCJKsansfont{PingFang SC}
+    }{
+      \setCJKsansfont{SimHei}
+    }
+  }
+}
+
+% Layout and basics.
 \usepackage[
   ignoreheadfoot,
-  top=1 cm, bottom=1 cm,
-  left=1 cm, right=1.25 cm,
-  footskip=1.25 cm
+  top=1cm,
+  bottom=1cm,
+  left=1cm,
+  right=1.25cm,
+  footskip=1.25cm
 ]{geometry}
-\usepackage{titlesec}
 \usepackage{hyperref}
-\usepackage{bookmark}
-\usepackage{enumitem}
-\usepackage{changepage}
-\usepackage{tabularx,array}
-\usepackage{environ}
-\usepackage{calc}
 \usepackage[dvipsnames]{xcolor}
-\usepackage{amsmath}
-\usepackage{needspace}
-\usepackage{paracol} % ← threecolentry 需要
 
 \definecolor{primaryColor}{RGB}{0,0,0}
-\hypersetup{colorlinks=true, urlcolor=primaryColor}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=primaryColor,
+  pdfborder={0 0 0}
+}
 
 \raggedright
 \pagestyle{empty}
@@ -42,64 +85,57 @@
 \setlength{\columnsep}{0.15cm}
 \pagenumbering{gobble}
 
-% 断行更稳（可选，减少 Overfull hbox）
+% Reduce overfull boxes in mixed Chinese/English content.
 \emergencystretch=2em
 \XeTeXlinebreaklocale "zh"
-\XeTeXlinebreakskip = 0pt plus 1pt
+\XeTeXlinebreakskip=0pt plus 1pt
 
-% Section style
-\titleformat{\section}{\needspace{4\baselineskip}\bfseries\large}{}{0pt}{}[\vspace{1pt}\titlerule]
-\titlespacing{\section}{-1pt}{0.2 cm}{0.2 cm}
+% Section style without extra package dependencies.
+\renewcommand{\section}[1]{%
+  \par\vspace{0.20cm}%
+  {\large\bfseries #1\par}%
+  \vspace{1pt}\hrule\vspace{0.20cm}%
+}
 
-% Bullets & list indent
-\renewcommand\labelitemi{$\vcenter{\hbox{\small$\bullet$}}$}
+% Bullets and list spacing.
+\renewcommand\labelitemi{\textbullet}
 \newenvironment{highlights}{
-  \begin{itemize}[
-    topsep=0.10 cm,
-    parsep=0.10 cm,
-    partopsep=0pt,
-    itemsep=0pt,
-    leftmargin=0.8cm,
-    align=parleft
-  ]
+  \begin{itemize}
+    \setlength{\topsep}{0.10cm}
+    \setlength{\parsep}{0.10cm}
+    \setlength{\partopsep}{0pt}
+    \setlength{\itemsep}{0pt}
 }{\end{itemize}}
 
-% --- 正文块：占 80% 宽（右留白 20%）---
+% Body block: keep a consistent right-side date/location gutter.
 \newenvironment{onecolentry}{%
   \par\noindent
-  \begin{adjustwidth}{0pt}{0.20\linewidth}% 右侧留白 20%
-  \setlength{\parskip}{0.2em}%
+  \begin{list}{}{%
+    \setlength{\leftmargin}{0pt}%
+    \setlength{\rightmargin}{0.20\linewidth}%
+    \setlength{\listparindent}{0pt}%
+    \setlength{\itemindent}{0pt}%
+    \setlength{\parsep}{0.2em}%
+    \setlength{\topsep}{0pt}%
+  }%
+  \item\relax
 }{%
-  \end{adjustwidth}%
+  \end{list}%
   \par
 }
 
-% --- 项目标题行：整行分两块，左 78% 自动换行，右 20% 右对齐显示日期/地点 ---
-\NewEnviron{twocolentry}[1]{%
+% Entry heading: left content wraps, right side keeps date/location aligned.
+\newcommand{\twocolentryright}{}
+\newenvironment{twocolentry}[1]{%
+  \def\twocolentryright{#1}%
   \par\noindent
   \begin{minipage}[t]{0.78\linewidth}\setlength{\parskip}{0.2em}
-    \BODY
+}{%
   \end{minipage}\hfill
   \begin{minipage}[t]{0.20\linewidth}\raggedleft
-    \small #1
+    \small \twocolentryright
   \end{minipage}%
   \par
 }
 
-
-% （可选）如果你想让右列随版宽自适应 20%，把上面 p{4.5cm} 换成：
-%   p{0.2\linewidth}
-% 并与 onecolentry 的 0.2\linewidth 保持一致观感。
-
-% three（如需三列）
-\newenvironment{threecolentry}[3][]{
-    \onecolentry
-    \def\thirdColumn{#3}
-    \setcolumnwidth{, \fill, 4.5 cm} % paracol 提供
-    \begin{paracol}{3}
-    {\raggedright #2} \switchcolumn
-}{
-    \switchcolumn \raggedleft \thirdColumn
-    \end{paracol}
-    \endonecolentry
-}
+\newcommand{\entrysep}{\vspace{0.20cm}}

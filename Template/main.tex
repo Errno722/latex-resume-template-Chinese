@@ -1,21 +1,12 @@
-\documentclass[10pt, letterpaper]{article}
+\documentclass[10pt, a4paper]{article}
 \input{preamble.tex}
 
-% ===== 在这里切换岗位版本 =====
-% 可选：job_1 / job_2
-\def\jobtype{job_1}
-% =================================
+% Default version. Wrapper files can override this before loading main.tex.
+\providecommand{\jobtype}{job_1}
 
 \begin{document}
 
-% --- Header（占位） ---
-{\fontsize{22pt}{22pt}\selectfont Your Name\par}
-\vspace{5pt}
-{\normalsize
-you@example.com \hspace{5pt}|\hspace{5pt}
-(+00) 000-0000 \hspace{5pt}|\hspace{5pt}
-Status: Open to Work\par}
-\vspace{8pt}
+\input{profile.tex}
 
 \section{教育背景 / Education}
 \input{education.tex}
@@ -24,12 +15,17 @@ Status: Open to Work\par}
 \input{work_experience.tex}
 
 \section{项目经历 / Projects}
-\input{projects/\jobtype.tex}
+\IfFileExists{projects/\jobtype.tex}{%
+  \input{projects/\jobtype.tex}
+}{%
+  \PackageError{resume-template}{Missing project file for job type `\jobtype`}{Create Template/projects/\jobtype.tex or choose an existing job type.}
+}
 
 \section{技能 / Skills}
-\input{skills/\jobtype.tex}
+\IfFileExists{skills/\jobtype.tex}{%
+  \input{skills/\jobtype.tex}
+}{%
+  \PackageError{resume-template}{Missing skills file for job type `\jobtype`}{Create Template/skills/\jobtype.tex or choose an existing job type.}
+}
 
 \end{document}
-
-
-
